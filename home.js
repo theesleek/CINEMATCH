@@ -340,10 +340,21 @@ async function loadGenres() {
         let data;
         
         if (USE_API_PROXY) {
-            const response = await fetch(`${API_PROXY_URL}?type=genres&media_type=movie`);
-            if (!response.ok) throw new Error('Failed to fetch genres');
+            const url = `${API_PROXY_URL}?type=genres&media_type=movie`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const errorMsg = errorData.message || errorData.error || `HTTP ${response.status}`;
+                throw new Error(`Failed to fetch genres: ${errorMsg}`);
+            }
+            
             const proxyData = await response.json();
-            if (!proxyData.success) throw new Error('Failed to fetch genres');
+            
+            if (!proxyData.success) {
+                throw new Error(proxyData.message || proxyData.error || 'Failed to fetch genres');
+            }
+            
             data = { genres: proxyData.genres || [] };
         } else {
             const response = await fetch(`${TMDB_API_BASE}/genre/movie/list?api_key=${TMDB_API_KEY}&language=en-US`);
@@ -367,7 +378,14 @@ async function loadGenres() {
         genresContainer.innerHTML = genresHTML;
     } catch (error) {
         console.error('Error loading genres:', error);
-        genresContainer.innerHTML = '<div class="section-loading">Failed to load genres</div>';
+        const errorMsg = error.message || 'Unknown error';
+        genresContainer.innerHTML = `
+            <div class="section-loading">
+                <p>Failed to load genres</p>
+                <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">${escapeHtml(errorMsg)}</p>
+                ${USE_API_PROXY ? '<p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">Make sure TMDB_API_KEY is set in Vercel Environment Variables</p>' : ''}
+            </div>
+        `;
     }
 }
 
@@ -450,9 +468,22 @@ async function filterByGenre(genreId, genreName) {
 async function fetchTMDBData(type, mediaType = 'movie', page = 1) {
     try {
         if (USE_API_PROXY) {
-            const response = await fetch(`${API_PROXY_URL}?type=${type}&media_type=${mediaType}&page=${page}`);
-            if (!response.ok) throw new Error(`Failed to fetch ${type}`);
-            return await response.json();
+            const url = `${API_PROXY_URL}?type=${type}&media_type=${mediaType}&page=${page}`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const errorMsg = errorData.message || errorData.error || `HTTP ${response.status}`;
+                throw new Error(`Failed to fetch ${type}: ${errorMsg}`);
+            }
+            
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.message || data.error || `Failed to fetch ${type}`);
+            }
+            
+            return data;
         } else {
             let url;
             if (type === 'popular') {
@@ -473,6 +504,14 @@ async function fetchTMDBData(type, mediaType = 'movie', page = 1) {
         }
     } catch (error) {
         console.error(`Error fetching ${type}:`, error);
+        console.error('Error details:', {
+            type,
+            mediaType,
+            page,
+            USE_API_PROXY,
+            API_PROXY_URL,
+            error: error.message
+        });
         throw error;
     }
 }
@@ -495,7 +534,15 @@ async function loadPopularMovies() {
             container.innerHTML = '<div class="no-results">No popular movies found</div>';
         }
     } catch (error) {
-        container.innerHTML = '<div class="no-results">Failed to load popular movies</div>';
+        console.error('Error loading popular movies:', error);
+        const errorMsg = error.message || 'Unknown error';
+        container.innerHTML = `
+            <div class="no-results">
+                <p>Failed to load popular movies</p>
+                <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">${escapeHtml(errorMsg)}</p>
+                ${USE_API_PROXY ? '<p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">Make sure TMDB_API_KEY is set in Vercel Environment Variables</p>' : ''}
+            </div>
+        `;
     }
 }
 
@@ -517,7 +564,15 @@ async function loadTopRatedMovies() {
             container.innerHTML = '<div class="no-results">No top rated movies found</div>';
         }
     } catch (error) {
-        container.innerHTML = '<div class="no-results">Failed to load top rated movies</div>';
+        console.error('Error loading top rated movies:', error);
+        const errorMsg = error.message || 'Unknown error';
+        container.innerHTML = `
+            <div class="no-results">
+                <p>Failed to load top rated movies</p>
+                <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">${escapeHtml(errorMsg)}</p>
+                ${USE_API_PROXY ? '<p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">Make sure TMDB_API_KEY is set in Vercel Environment Variables</p>' : ''}
+            </div>
+        `;
     }
 }
 
@@ -539,7 +594,15 @@ async function loadNowPlayingMovies() {
             container.innerHTML = '<div class="no-results">No now playing movies found</div>';
         }
     } catch (error) {
-        container.innerHTML = '<div class="no-results">Failed to load now playing movies</div>';
+        console.error('Error loading now playing movies:', error);
+        const errorMsg = error.message || 'Unknown error';
+        container.innerHTML = `
+            <div class="no-results">
+                <p>Failed to load now playing movies</p>
+                <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">${escapeHtml(errorMsg)}</p>
+                ${USE_API_PROXY ? '<p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">Make sure TMDB_API_KEY is set in Vercel Environment Variables</p>' : ''}
+            </div>
+        `;
     }
 }
 
@@ -561,7 +624,15 @@ async function loadTVShows() {
             container.innerHTML = '<div class="no-results">No TV shows found</div>';
         }
     } catch (error) {
-        container.innerHTML = '<div class="no-results">Failed to load TV shows</div>';
+        console.error('Error loading TV shows:', error);
+        const errorMsg = error.message || 'Unknown error';
+        container.innerHTML = `
+            <div class="no-results">
+                <p>Failed to load TV shows</p>
+                <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">${escapeHtml(errorMsg)}</p>
+                ${USE_API_PROXY ? '<p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">Make sure TMDB_API_KEY is set in Vercel Environment Variables</p>' : ''}
+            </div>
+        `;
     }
 }
 
@@ -583,7 +654,15 @@ async function loadOnTheAir() {
             container.innerHTML = '<div class="no-results">No shows on the air found</div>';
         }
     } catch (error) {
-        container.innerHTML = '<div class="no-results">Failed to load shows on the air</div>';
+        console.error('Error loading shows on the air:', error);
+        const errorMsg = error.message || 'Unknown error';
+        container.innerHTML = `
+            <div class="no-results">
+                <p>Failed to load shows on the air</p>
+                <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">${escapeHtml(errorMsg)}</p>
+                ${USE_API_PROXY ? '<p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">Make sure TMDB_API_KEY is set in Vercel Environment Variables</p>' : ''}
+            </div>
+        `;
     }
 }
 
