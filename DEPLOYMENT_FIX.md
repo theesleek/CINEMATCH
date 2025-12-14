@@ -1,67 +1,45 @@
-# 🚀 Deployment Fix for Vercel & Netlify
+# 🚀 Deployment Fix for Vercel
 
 ## Problem Fixed
-When deploying to Vercel/Netlify, only the background image was showing. This was because:
-1. **No `index.html`** - Vercel/Netlify look for `index.html` as the default entry point
+When deploying to Vercel, only the background image was showing. This was because:
+1. **No `index.html`** - Vercel looks for `index.html` as the default entry point
 2. **Missing routing configuration** - Static file routing wasn't configured
 
 ## Solution Applied
 
 ### 1. Created `index.html` ✅
 - Added `index.html` as the landing page (copied from `landing.html`)
-- This is now the default entry point for both platforms
+- This is now the default entry point for Vercel
+- Landing page shows first when visiting the site
 
 ### 2. Updated `vercel.json` ✅
 - Added `rewrites` section to handle routing
-- Routes `/` to `index.html`
-- Routes `/home` to `home.html`
-
-### 3. Created `netlify.toml` ✅
-- Added Netlify configuration file
-- Configured redirects for proper routing
-- Added security headers
-- Added CORS headers for API routes
+- Routes `/` to `index.html` (landing page)
+- Routes `/home` to `home.html` (main application)
+- Added `routes` for API functions
 
 ## Files Changed
 
 1. **`index.html`** (NEW) - Landing page entry point
-2. **`vercel.json`** (UPDATED) - Added rewrites
-3. **`netlify.toml`** (NEW) - Netlify configuration
+2. **`vercel.json`** (UPDATED) - Added rewrites and routes
 
 ## Deployment Instructions
 
-### For Vercel:
-1. Push all files to GitHub
-2. Deploy on Vercel (it will auto-detect `vercel.json`)
-3. Set `TMDB_API_KEY` environment variable
-4. Redeploy
-5. ✅ Should work now!
+### For Vercel (Simple Steps):
+1. **Option A: Direct Upload** (No Git needed)
+   - Go to [vercel.com](https://vercel.com)
+   - Click "Add New Project"
+   - Drag and drop your project folder
+   - Set `TMDB_API_KEY` environment variable
+   - Click "Deploy"
+   - ✅ Done!
 
-### For Netlify:
-1. Push all files to GitHub
-2. Deploy on Netlify (it will auto-detect `netlify.toml`)
-3. Set `TMDB_API_KEY` environment variable
-4. **Note**: For Netlify, you may need to create a Netlify Function for the API proxy
-   - See "Netlify Functions Setup" below
-
-## Netlify Functions Setup (Optional)
-
-If you want to use Netlify Functions instead of Vercel's serverless functions:
-
-1. Create `.netlify/functions/movie-search.js`:
-```javascript
-// Copy the content from api/movie-search.js
-// Update the export format if needed
-```
-
-2. Update `netlify.toml` to uncomment the API redirect section
-
-3. Update `home.js` to detect Netlify:
-```javascript
-const IS_NETLIFY = window.location.hostname.includes('netlify.app');
-const IS_VERCEL = window.location.hostname.includes('vercel.app');
-const USE_API_PROXY = IS_VERCEL || IS_NETLIFY;
-```
+2. **Option B: Via GitHub** (Recommended for version control)
+   - Push files to GitHub
+   - Import repository on Vercel
+   - Set `TMDB_API_KEY` environment variable
+   - Deploy
+   - ✅ Done!
 
 ## Testing After Deployment
 
@@ -87,11 +65,11 @@ const USE_API_PROXY = IS_VERCEL || IS_NETLIFY;
 - Verify `netlify.toml` redirects are correct
 - Check file paths are correct (case-sensitive)
 
-### Issue: API not working on Netlify
+### Issue: API not working
 **Solution**:
-- Set up Netlify Functions (see above)
-- Or use Vercel for API proxy
-- Or update `home.js` to use direct API calls on Netlify
+- Verify `TMDB_API_KEY` is set in Vercel Environment Variables
+- Redeploy after setting environment variable
+- Check browser console for specific error messages
 
 ## File Structure (After Fix)
 

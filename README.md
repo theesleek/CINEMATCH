@@ -57,67 +57,43 @@ A modern movie discovery and tracking application with user authentication and p
 - **Locally**: Uses direct TMDB API calls (needs API key in `home.js`)
 - **On Vercel**: Uses API proxy automatically (needs API key in Vercel env vars)
 
-### Vercel Deployment
+### Vercel Deployment (Simple - No Git Required!)
 
-#### Method 1: Via Vercel Dashboard (Recommended)
+#### Quick Deploy Steps:
 
-1. **Prepare your code**:
-   - Push your code to GitHub/GitLab/Bitbucket
-   - Or upload as a ZIP file
-
-2. **Deploy to Vercel**:
-   - Go to https://vercel.com
+1. **Go to Vercel**:
+   - Visit https://vercel.com
    - Sign up/Login (free account)
-   - Click "New Project"
-   - Import your repository or upload files
-   - Vercel will auto-detect the project
 
-3. **Set Environment Variable** (IMPORTANT):
-   - In your project dashboard, go to **Settings** > **Environment Variables**
-   - Click "Add New"
-   - **Name**: `TMDB_API_KEY`
-   - **Value**: `0b7ec94633601478da8ad67533d0275c` (your API key)
-   - Select all environments (Production, Preview, Development)
-   - Click "Save"
+2. **Deploy Your Project**:
+   - Click **"Add New..."** → **"Project"**
+   - **Option A**: Drag and drop your project folder (no Git needed!)
+   - **Option B**: Import from GitHub if you have it there
+   - Project name: `cinematch` (or your choice)
+   - Framework: Leave as default or select "Other"
 
-4. **Redeploy**:
-   - Go to **Deployments** tab
-   - Click the three dots (⋯) on the latest deployment
-   - Select "Redeploy"
-   - Or push a new commit to trigger automatic deployment
+3. **Set Environment Variable** (IMPORTANT - Do this before deploying!):
+   - Click **"Environment Variables"** section
+   - Click **"Add"**
+   - **Key**: `TMDB_API_KEY`
+   - **Value**: `0b7ec94633601478da8ad67533d0275c`
+   - **Environment**: Select all (Production, Preview, Development)
+   - Click **"Save"**
 
-5. **Your app is live!**
-   - The API proxy (`/api/movie-search`) will automatically work
-   - Works with VPN and handles CORS automatically
-   - No client-side API key exposure
+4. **Deploy**:
+   - Click **"Deploy"** button
+   - Wait 1-2 minutes for deployment
 
-#### Method 2: Via Vercel CLI
+5. **Done!** ✅
+   - Your site is live!
+   - Landing page (`index.html`) will show first
+   - Click "Go to Home" to access the main app
+   - API proxy works automatically
 
-1. **Install Vercel CLI**:
-   ```bash
-   npm i -g vercel
-   ```
-
-2. **Login to Vercel**:
-   ```bash
-   vercel login
-   ```
-
-3. **Deploy**:
-   ```bash
-   vercel
-   ```
-
-4. **Set Environment Variable**:
-   ```bash
-   vercel env add TMDB_API_KEY
-   # When prompted, enter: 0b7ec94633601478da8ad67533d0275c
-   ```
-
-5. **Redeploy**:
-   ```bash
-   vercel --prod
-   ```
+**Note**: After deployment, if you need to add/change the environment variable:
+- Go to Project → Settings → Environment Variables
+- Add/Edit the variable
+- Go to Deployments → Click ⋯ → Redeploy
 
 #### Important Notes for Vercel:
 
